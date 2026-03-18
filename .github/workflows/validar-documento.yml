@@ -11,7 +11,6 @@ on:
         options:
           - CPF
           - CNPJ
-          - IE
       numero_documento:
         description: 'Número do documento (sem caracteres especiais)'
         required: true
@@ -39,8 +38,7 @@ jobs:
           cobc -x -o bin/validador \
             src/validador.cob \
             src/modulos/validar-cpf.cob \
-            src/modulos/validar-cnpj.cob \
-            src/modulos/validar-ie.cob
+            src/modulos/validar-cnpj.cob
       
       - name: Executar validação
         run: |
