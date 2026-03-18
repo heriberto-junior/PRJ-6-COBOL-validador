@@ -40,9 +40,6 @@
                WHEN "cnpj"
                    CALL "VALIDAR-CNPJ" USING WS-NUMERO 
                        BY REFERENCE WS-RESULTADO
-               WHEN "ie"
-                   CALL "VALIDAR-IE" USING WS-NUMERO 
-                       BY REFERENCE WS-RESULTADO
                WHEN OTHER
                    DISPLAY "ERRO: Tipo de documento inválido!"
                    DISPLAY "Opções: cpf, cnpj, ie"
