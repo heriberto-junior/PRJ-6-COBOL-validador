@@ -33,15 +33,15 @@ jobs:
       - name: Compilar programa COBOL
         run: |
           mkdir -p bin
-          cobc -x -o bin/validador src/validador.cob \
+          cobc -x -o bin/validador \
+            src/validador.cob \
             src/modulos/validar-cpf.cob \
             src/modulos/validar-cnpj.cob \
             src/modulos/validar-ie.cob
       
       - name: Validar documento
         run: |
-          bin/validador "${{ github.event.inputs.tipo_documento }}" \
-                        "${{ github.event.inputs.numero_documento }}"
+          bin/validador "${{ github.event.inputs.tipo_documento }}" "${{ github.event.inputs.numero_documento }}"
       
       - name: Resultado
         if: success()
