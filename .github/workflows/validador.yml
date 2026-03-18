@@ -6,12 +6,12 @@ on:
       tipo_documento:
         description: 'Tipo de documento'
         required: true
-        default: 'cnpj'
+        default: 'CNPJ'
         type: choice
         options:
-          - cpf
-          - cnpj
-          - ie
+          - CPF
+          - CNPJ
+          - IE
       numero_documento:
         description: 'Número do documento (sem caracteres especiais)'
         required: true
