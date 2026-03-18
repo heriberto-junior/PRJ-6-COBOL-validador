@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       tipo_documento:
-        description: 'Tipo de documento'
+        description: 'Tipo de documento:'
         required: true
         default: 'CNPJ'
         type: choice
@@ -12,7 +12,7 @@ on:
           - CPF
           - CNPJ
       numero_documento:
-        description: 'Número do documento (sem caracteres especiais)'
+        description: 'Número do documento:'
         required: true
         type: string
 
