@@ -39,7 +39,7 @@ validador-documentos/
 2. Selecione **Validador de Documentos**
 3. Clique em **Run workflow**
 4. Escolha o tipo de documento (CPF ou CNPJ)
-5. Digite o número do documento (sem caracteres especiais)
+5. Digite o número do documento
 6. Clique em **Run**
 7. Acompanhe a execução nos logs
 
@@ -60,7 +60,6 @@ O arquivo `.github/workflows/validar-documento.yml` configura:
 
 ## Futuras Melhorias
 
-- Adicionar validação de IE (Inscrição Estadual) com suporte para múltiplos estados
 - Integração com API REST via wrapper Python
 - Deploy em Google Cloud com Cloud Run
-- Suporte para mais tipos de documentos brasileiros
+- Implementação de um Front End com CSS/JavaScript/HTML
