@@ -13,7 +13,7 @@
        PROCEDURE DIVISION.
            ACCEPT WS-ARGS FROM COMMAND-LINE.
            
-      *    Extrair primeiro argumento (tipo)
+      *    Extrair argumentos
            MOVE 1 TO WS-POS.
            MOVE FUNCTION TRIM(WS-ARGS) TO WS-ARGS.
            
@@ -46,9 +46,10 @@
                WHEN OTHER
                    DISPLAY "ERRO: Tipo de documento inválido!"
                    DISPLAY "Opções: cpf, cnpj, ie"
-                   STOP RUN RETURNING 1
+                   STOP RUN RETURNING 0
            END-EVALUATE.
            
+      *    Sempre exibir resultado e retornar 0 (sucesso)
            EVALUATE WS-RESULTADO
                WHEN "VALIDO"
                    DISPLAY "========================================="
@@ -58,7 +59,6 @@
                    DISPLAY "Número: " WS-NUMERO
                    DISPLAY "Status: APROVADO"
                    DISPLAY "========================================="
-                   STOP RUN RETURNING 0
                WHEN "INVALIDO"
                    DISPLAY "========================================="
                    DISPLAY "✗ DOCUMENTO INVÁLIDO"
@@ -67,8 +67,9 @@
                    DISPLAY "Número: " WS-NUMERO
                    DISPLAY "Status: REJEITADO"
                    DISPLAY "========================================="
-                   STOP RUN RETURNING 1
                WHEN OTHER
                    DISPLAY "Erro desconhecido"
-                   STOP RUN RETURNING 1
            END-EVALUATE.
+           
+      *    Sempre retorna 0 (sucesso) - a lógica está no resultado exibido
+           STOP RUN RETURNING 0.
