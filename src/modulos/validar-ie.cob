@@ -13,13 +13,13 @@
        01  WS-NUM              PIC 9(2).
        01  WS-DIGITO           PIC 9(2).
        01  WS-DV               PIC 9(1).
-       01  WS-ESTADO           PIC X(2).
+       01  WS-TEMP             PIC 9(4).
        
        LINKAGE SECTION.
        01  LS-IE               PIC X(15).
        01  LS-RESULTADO        PIC X(10).
        
-       PROCEDURE DIVISION USING LS-IE RETURNING LS-RESULTADO.
+       PROCEDURE DIVISION USING LS-IE BY REFERENCE LS-RESULTADO.
        
            MOVE LS-IE TO WS-IE.
            MOVE FUNCTION LENGTH(FUNCTION TRIM(WS-IE)) 
@@ -41,35 +41,22 @@
                END-IF
            END-PERFORM.
            
-      *    Extrair estado (primeiros 2 dígitos)
-      *    Formato: EEDDDDDDDDDD ou similar
-      *    Validar somente dígitos (próximo passo seria
-      *    validar por algoritmo específico do estado)
-           
-      *    Para simplicidade, aceitar qualquer IE bem formado
-      *    Futuramente, adicionar validações específicas por estado
-           
-      *    Validação básica: não pode ser todos zeros
+      *    Não pode ser todos zeros
            IF WS-IE = "0000000000000000"
                MOVE "INVALIDO" TO LS-RESULTADO
                GOBACK
            END-IF.
            
-      *    Validação por tamanho (alguns estados)
-      *    São Paulo: 14 dígitos
-      *    Minas Gerais: 13 dígitos
-      *    Rio de Janeiro: 8 dígitos
-      *    Bahia: 8 ou 9 dígitos
-           
+      *    Validação por tamanho específico de estado
            EVALUATE WS-TAMANHO
                WHEN 8
-      *            RJ ou BA (formato curto)
+      *            RJ ou BA (formato curto) - válido
                    MOVE "VALIDO" TO LS-RESULTADO
                WHEN 9
-      *            BA (formato longo)
+      *            BA (formato longo) - válido
                    MOVE "VALIDO" TO LS-RESULTADO
                WHEN 10
-      *            Outros formatos
+      *            Outros formatos - válido
                    MOVE "VALIDO" TO LS-RESULTADO
                WHEN 13
       *            MG (Minas Gerais)
@@ -78,7 +65,7 @@
       *            SP (São Paulo)
                    PERFORM VALIDAR-SP
                WHEN 15
-      *            Outros formatos
+      *            Outros formatos - válido
                    MOVE "VALIDO" TO LS-RESULTADO
                WHEN OTHER
                    MOVE "INVALIDO" TO LS-RESULTADO
@@ -87,58 +74,49 @@
            GOBACK.
        
        VALIDAR-SP.
-      *    Algoritmo específico para São Paulo (14 dígitos)
-      *    Primeira sequência: posições 1-8
+      *    Algoritmo para São Paulo (14 dígitos)
            MOVE 0 TO WS-SOMA.
            MOVE 5 TO WS-MULTIPLICADOR.
            PERFORM VARYING WS-POS FROM 1 BY 1
                UNTIL WS-POS > 8
                MOVE WS-IE(WS-POS:1) TO WS-CHAR
                MOVE FUNCTION NUMVAL(WS-CHAR) TO WS-NUM
-               ADD WS-NUM * WS-MULTIPLICADOR TO WS-SOMA
+               COMPUTE WS-TEMP = WS-NUM * WS-MULTIPLICADOR
+               ADD WS-TEMP TO WS-SOMA
                SUBTRACT 1 FROM WS-MULTIPLICADOR
            END-PERFORM.
            
-           DIVIDE WS-SOMA BY 11 GIVING WS-DIGITO 
-               REMAINDER WS-RESTO.
-           IF WS-RESTO = 0
-               MOVE 0 TO WS-DV
-           ELSE IF WS-RESTO = 1
+           COMPUTE WS-RESTO = FUNCTION MOD(WS-SOMA, 11).
+           IF WS-RESTO = 0 OR WS-RESTO = 1
                MOVE 0 TO WS-DV
            ELSE
                COMPUTE WS-DV = 11 - WS-RESTO
-           END-IF
            END-IF.
            
-      *    Verificar primeiro dígito verificador (posição 9)
            IF WS-IE(9:1) NOT = WS-DV
                MOVE "INVALIDO" TO LS-RESULTADO
                GOBACK
            END-IF.
            
-      *    Segunda sequência: posições 10-14
+      *    Segunda sequência
            MOVE 0 TO WS-SOMA.
            MOVE 9 TO WS-MULTIPLICADOR.
            PERFORM VARYING WS-POS FROM 10 BY 1
                UNTIL WS-POS > 14
                MOVE WS-IE(WS-POS:1) TO WS-CHAR
                MOVE FUNCTION NUMVAL(WS-CHAR) TO WS-NUM
-               ADD WS-NUM * WS-MULTIPLICADOR TO WS-SOMA
+               COMPUTE WS-TEMP = WS-NUM * WS-MULTIPLICADOR
+               ADD WS-TEMP TO WS-SOMA
                SUBTRACT 1 FROM WS-MULTIPLICADOR
            END-PERFORM.
            
-           DIVIDE WS-SOMA BY 11 GIVING WS-DIGITO 
-               REMAINDER WS-RESTO.
-           IF WS-RESTO = 0
-               MOVE 0 TO WS-DV
-           ELSE IF WS-RESTO = 1
+           COMPUTE WS-RESTO = FUNCTION MOD(WS-SOMA, 11).
+           IF WS-RESTO = 0 OR WS-RESTO = 1
                MOVE 0 TO WS-DV
            ELSE
                COMPUTE WS-DV = 11 - WS-RESTO
-           END-IF
            END-IF.
            
-      *    Verificar segundo dígito verificador (última posição)
            IF WS-IE(14:1) NOT = WS-DV
                MOVE "INVALIDO" TO LS-RESULTADO
                GOBACK
@@ -147,27 +125,23 @@
            MOVE "VALIDO" TO LS-RESULTADO.
        
        VALIDAR-MG.
-      *    Algoritmo específico para Minas Gerais (13 dígitos)
-      *    MG usa algoritmo diferente de SP
+      *    Algoritmo para Minas Gerais (13 dígitos)
            MOVE 0 TO WS-SOMA.
            MOVE 11 TO WS-MULTIPLICADOR.
            PERFORM VARYING WS-POS FROM 1 BY 1
                UNTIL WS-POS > 12
                MOVE WS-IE(WS-POS:1) TO WS-CHAR
                MOVE FUNCTION NUMVAL(WS-CHAR) TO WS-NUM
-               ADD WS-NUM * WS-MULTIPLICADOR TO WS-SOMA
+               COMPUTE WS-TEMP = WS-NUM * WS-MULTIPLICADOR
+               ADD WS-TEMP TO WS-SOMA
                SUBTRACT 1 FROM WS-MULTIPLICADOR
            END-PERFORM.
            
-           DIVIDE WS-SOMA BY 11 GIVING WS-DIGITO 
-               REMAINDER WS-RESTO.
-           IF WS-RESTO = 0
-               MOVE 0 TO WS-DV
-           ELSE IF WS-RESTO = 1
+           COMPUTE WS-RESTO = FUNCTION MOD(WS-SOMA, 11).
+           IF WS-RESTO = 0 OR WS-RESTO = 1
                MOVE 0 TO WS-DV
            ELSE
                COMPUTE WS-DV = 11 - WS-RESTO
-           END-IF
            END-IF.
            
            IF WS-IE(13:1) NOT = WS-DV
