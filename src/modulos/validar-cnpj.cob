@@ -13,12 +13,13 @@
        01  WS-NUM             PIC 9(2).
        01  WS-DV1             PIC 9(1).
        01  WS-DV2             PIC 9(1).
+       01  WS-TEMP            PIC 9(4).
        
        LINKAGE SECTION.
        01  LS-CNPJ            PIC X(14).
        01  LS-RESULTADO       PIC X(10).
        
-       PROCEDURE DIVISION USING LS-CNPJ RETURNING LS-RESULTADO.
+       PROCEDURE DIVISION USING LS-CNPJ BY REFERENCE LS-RESULTADO.
        
            MOVE LS-CNPJ TO WS-CNPJ.
            
@@ -45,8 +46,9 @@
                UNTIL WS-POS > 8
                MOVE WS-CNPJ(WS-POS:1) TO WS-CHAR
                MOVE FUNCTION NUMVAL(WS-CHAR) TO WS-NUM
-               ADD FUNCTION MOD(WS-NUM * WS-MULTIPLICADOR, 11) 
-                   TO WS-SOMA
+               COMPUTE WS-TEMP = WS-NUM * WS-MULTIPLICADOR
+               COMPUTE WS-TEMP = FUNCTION MOD(WS-TEMP, 11)
+               ADD WS-TEMP TO WS-SOMA
                SUBTRACT 1 FROM WS-MULTIPLICADOR
            END-PERFORM.
            
@@ -54,13 +56,13 @@
                UNTIL WS-POS > 12
                MOVE WS-CNPJ(WS-POS:1) TO WS-CHAR
                MOVE FUNCTION NUMVAL(WS-CHAR) TO WS-NUM
-               ADD FUNCTION MOD(WS-NUM * WS-MULTIPLICADOR, 11) 
-                   TO WS-SOMA
+               COMPUTE WS-TEMP = WS-NUM * WS-MULTIPLICADOR
+               COMPUTE WS-TEMP = FUNCTION MOD(WS-TEMP, 11)
+               ADD WS-TEMP TO WS-SOMA
                SUBTRACT 1 FROM WS-MULTIPLICADOR
            END-PERFORM.
            
-           DIVIDE WS-SOMA BY 11 GIVING WS-DIGITO 
-               REMAINDER WS-RESTO.
+           COMPUTE WS-RESTO = FUNCTION MOD(WS-SOMA, 11).
            IF WS-RESTO < 2
                MOVE 0 TO WS-DV1
            ELSE
@@ -80,8 +82,9 @@
                UNTIL WS-POS > 9
                MOVE WS-CNPJ(WS-POS:1) TO WS-CHAR
                MOVE FUNCTION NUMVAL(WS-CHAR) TO WS-NUM
-               ADD FUNCTION MOD(WS-NUM * WS-MULTIPLICADOR, 11) 
-                   TO WS-SOMA
+               COMPUTE WS-TEMP = WS-NUM * WS-MULTIPLICADOR
+               COMPUTE WS-TEMP = FUNCTION MOD(WS-TEMP, 11)
+               ADD WS-TEMP TO WS-SOMA
                SUBTRACT 1 FROM WS-MULTIPLICADOR
            END-PERFORM.
            
@@ -89,13 +92,13 @@
                UNTIL WS-POS > 13
                MOVE WS-CNPJ(WS-POS:1) TO WS-CHAR
                MOVE FUNCTION NUMVAL(WS-CHAR) TO WS-NUM
-               ADD FUNCTION MOD(WS-NUM * WS-MULTIPLICADOR, 11) 
-                   TO WS-SOMA
+               COMPUTE WS-TEMP = WS-NUM * WS-MULTIPLICADOR
+               COMPUTE WS-TEMP = FUNCTION MOD(WS-TEMP, 11)
+               ADD WS-TEMP TO WS-SOMA
                SUBTRACT 1 FROM WS-MULTIPLICADOR
            END-PERFORM.
            
-           DIVIDE WS-SOMA BY 11 GIVING WS-DIGITO 
-               REMAINDER WS-RESTO.
+           COMPUTE WS-RESTO = FUNCTION MOD(WS-SOMA, 11).
            IF WS-RESTO < 2
                MOVE 0 TO WS-DV2
            ELSE
