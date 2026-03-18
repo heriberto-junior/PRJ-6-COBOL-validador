@@ -1,4 +1,4 @@
-# Validador de Documentos Brasileiros
+# Validador de CPF/CNPJ
 
 Um validador de documentos brasileiros (CPF e CNPJ) desenvolvido em COBOL com CI/CD integrado ao GitHub Actions.
 
