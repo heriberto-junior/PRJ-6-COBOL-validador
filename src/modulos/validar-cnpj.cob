@@ -21,13 +21,11 @@
        
            MOVE LS-CNPJ TO WS-CNPJ.
            
-      *    Validar tamanho
            IF FUNCTION LENGTH(FUNCTION TRIM(WS-CNPJ)) NOT = 14
                MOVE "INVALIDO" TO LS-RESULTADO
                GOBACK
            END-IF.
            
-      *    Validar se contém apenas números
            PERFORM VARYING WS-POS FROM 1 BY 1
                UNTIL WS-POS > 14
                MOVE WS-CNPJ(WS-POS:1) TO WS-CHAR
@@ -37,8 +35,6 @@
                END-IF
            END-PERFORM.
            
-      *    ===== PRIMEIRO DÍGITO VERIFICADOR =====
-      *    Multiplicadores: 5,4,3,2,9,8,7,6,5,4,3,2
            MOVE 0 TO WS-SOMA.
            PERFORM VARYING WS-POS FROM 1 BY 1
                UNTIL WS-POS > 12
@@ -50,4 +46,89 @@
                    WHEN 2
                        COMPUTE WS-TEMP = WS-NUM * 4
                    WHEN 3
-                       COMPUTE WS-TEMP = WS-NUM *
+                       COMPUTE WS-TEMP = WS-NUM * 3
+                   WHEN 4
+                       COMPUTE WS-TEMP = WS-NUM * 2
+                   WHEN 5
+                       COMPUTE WS-TEMP = WS-NUM * 9
+                   WHEN 6
+                       COMPUTE WS-TEMP = WS-NUM * 8
+                   WHEN 7
+                       COMPUTE WS-TEMP = WS-NUM * 7
+                   WHEN 8
+                       COMPUTE WS-TEMP = WS-NUM * 6
+                   WHEN 9
+                       COMPUTE WS-TEMP = WS-NUM * 5
+                   WHEN 10
+                       COMPUTE WS-TEMP = WS-NUM * 4
+                   WHEN 11
+                       COMPUTE WS-TEMP = WS-NUM * 3
+                   WHEN 12
+                       COMPUTE WS-TEMP = WS-NUM * 2
+               END-EVALUATE
+               ADD WS-TEMP TO WS-SOMA
+           END-PERFORM.
+           
+           COMPUTE WS-RESTO = FUNCTION MOD(WS-SOMA, 11).
+           IF WS-RESTO < 2
+               MOVE 0 TO WS-DV1
+           ELSE
+               COMPUTE WS-DV1 = 11 - WS-RESTO
+           END-IF.
+           
+           IF WS-CNPJ(13:1) NOT = WS-DV1
+               MOVE "INVALIDO" TO LS-RESULTADO
+               GOBACK
+           END-IF.
+           
+           MOVE 0 TO WS-SOMA.
+           PERFORM VARYING WS-POS FROM 1 BY 1
+               UNTIL WS-POS > 12
+               MOVE WS-CNPJ(WS-POS:1) TO WS-CHAR
+               MOVE FUNCTION NUMVAL(WS-CHAR) TO WS-NUM
+               EVALUATE WS-POS
+                   WHEN 1
+                       COMPUTE WS-TEMP = WS-NUM * 6
+                   WHEN 2
+                       COMPUTE WS-TEMP = WS-NUM * 7
+                   WHEN 3
+                       COMPUTE WS-TEMP = WS-NUM * 8
+                   WHEN 4
+                       COMPUTE WS-TEMP = WS-NUM * 9
+                   WHEN 5
+                       COMPUTE WS-TEMP = WS-NUM * 2
+                   WHEN 6
+                       COMPUTE WS-TEMP = WS-NUM * 3
+                   WHEN 7
+                       COMPUTE WS-TEMP = WS-NUM * 4
+                   WHEN 8
+                       COMPUTE WS-TEMP = WS-NUM * 5
+                   WHEN 9
+                       COMPUTE WS-TEMP = WS-NUM * 6
+                   WHEN 10
+                       COMPUTE WS-TEMP = WS-NUM * 7
+                   WHEN 11
+                       COMPUTE WS-TEMP = WS-NUM * 8
+                   WHEN 12
+                       COMPUTE WS-TEMP = WS-NUM * 9
+               END-EVALUATE
+               ADD WS-TEMP TO WS-SOMA
+           END-PERFORM.
+           
+           COMPUTE WS-TEMP = WS-DV1 * 2.
+           ADD WS-TEMP TO WS-SOMA.
+           
+           COMPUTE WS-RESTO = FUNCTION MOD(WS-SOMA, 11).
+           IF WS-RESTO < 2
+               MOVE 0 TO WS-DV2
+           ELSE
+               COMPUTE WS-DV2 = 11 - WS-RESTO
+           END-IF.
+           
+           IF WS-CNPJ(14:1) NOT = WS-DV2
+               MOVE "INVALIDO" TO LS-RESULTADO
+               GOBACK
+           END-IF.
+           
+           MOVE "VALIDO" TO LS-RESULTADO.
+           GOBACK.
