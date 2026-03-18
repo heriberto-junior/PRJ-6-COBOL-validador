@@ -40,6 +40,7 @@
            END-PERFORM.
            
       *    Calcular primeiro dígito verificador
+      *    Primeiros 8 dígitos: multiplicadores 5,4,3,2,9,8,7,6
            MOVE 0 TO WS-SOMA.
            MOVE 5 TO WS-MULTIPLICADOR.
            PERFORM VARYING WS-POS FROM 1 BY 1
@@ -47,21 +48,22 @@
                MOVE WS-CNPJ(WS-POS:1) TO WS-CHAR
                MOVE FUNCTION NUMVAL(WS-CHAR) TO WS-NUM
                COMPUTE WS-TEMP = WS-NUM * WS-MULTIPLICADOR
-               COMPUTE WS-TEMP = FUNCTION MOD(WS-TEMP, 11)
                ADD WS-TEMP TO WS-SOMA
                SUBTRACT 1 FROM WS-MULTIPLICADOR
            END-PERFORM.
            
+      *    Próximos 4 dígitos: multiplicadores 5,4,3,2
+           MOVE 5 TO WS-MULTIPLICADOR.
            PERFORM VARYING WS-POS FROM 9 BY 1
                UNTIL WS-POS > 12
                MOVE WS-CNPJ(WS-POS:1) TO WS-CHAR
                MOVE FUNCTION NUMVAL(WS-CHAR) TO WS-NUM
                COMPUTE WS-TEMP = WS-NUM * WS-MULTIPLICADOR
-               COMPUTE WS-TEMP = FUNCTION MOD(WS-TEMP, 11)
                ADD WS-TEMP TO WS-SOMA
                SUBTRACT 1 FROM WS-MULTIPLICADOR
            END-PERFORM.
            
+      *    Calcula resto apenas uma vez no final
            COMPUTE WS-RESTO = FUNCTION MOD(WS-SOMA, 11).
            IF WS-RESTO < 2
                MOVE 0 TO WS-DV1
@@ -76,6 +78,7 @@
            END-IF.
            
       *    Calcular segundo dígito verificador
+      *    Primeiros 9 dígitos: multiplicadores 6,7,8,9,2,3,4,5,6
            MOVE 0 TO WS-SOMA.
            MOVE 6 TO WS-MULTIPLICADOR.
            PERFORM VARYING WS-POS FROM 1 BY 1
@@ -83,21 +86,28 @@
                MOVE WS-CNPJ(WS-POS:1) TO WS-CHAR
                MOVE FUNCTION NUMVAL(WS-CHAR) TO WS-NUM
                COMPUTE WS-TEMP = WS-NUM * WS-MULTIPLICADOR
-               COMPUTE WS-TEMP = FUNCTION MOD(WS-TEMP, 11)
                ADD WS-TEMP TO WS-SOMA
                SUBTRACT 1 FROM WS-MULTIPLICADOR
+               IF WS-MULTIPLICADOR = 1
+                   MOVE 9 TO WS-MULTIPLICADOR
+               END-IF
            END-PERFORM.
            
+      *    Próximos 4 dígitos: multiplicadores 7,8,9,2
+           MOVE 7 TO WS-MULTIPLICADOR.
            PERFORM VARYING WS-POS FROM 10 BY 1
                UNTIL WS-POS > 13
                MOVE WS-CNPJ(WS-POS:1) TO WS-CHAR
                MOVE FUNCTION NUMVAL(WS-CHAR) TO WS-NUM
                COMPUTE WS-TEMP = WS-NUM * WS-MULTIPLICADOR
-               COMPUTE WS-TEMP = FUNCTION MOD(WS-TEMP, 11)
                ADD WS-TEMP TO WS-SOMA
-               SUBTRACT 1 FROM WS-MULTIPLICADOR
+               ADD 1 TO WS-MULTIPLICADOR
+               IF WS-MULTIPLICADOR = 10
+                   MOVE 2 TO WS-MULTIPLICADOR
+               END-IF
            END-PERFORM.
            
+      *    Calcula resto apenas uma vez no final
            COMPUTE WS-RESTO = FUNCTION MOD(WS-SOMA, 11).
            IF WS-RESTO < 2
                MOVE 0 TO WS-DV2
