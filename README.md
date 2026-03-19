@@ -1,4 +1,4 @@
-# CPF/CNPJ Validator
+# [ENG] CPF/CNPJ Validator
 
 A Brazilian document validator (CPF and CNPJ) built in COBOL with CI/CD integrated into GitHub Actions.
 
@@ -67,7 +67,7 @@ The `.github/workflows/validar-documento.yml` file configures:
 ---
 ---
 
-# Validador de CPF/CNPJ
+# [PT-BR] Validador de CPF/CNPJ
 
 Um validador de documentos brasileiros (CPF e CNPJ) desenvolvido em COBOL com CI/CD integrado ao GitHub Actions.
 
