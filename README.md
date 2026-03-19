@@ -1,3 +1,72 @@
+# CPF/CNPJ Validator
+
+A Brazilian document validator (CPF and CNPJ) built in COBOL with CI/CD integrated into GitHub Actions.
+
+## Description
+
+This project implements validators for Brazilian documents using GnuCOBOL, with support for continuous integration through GitHub Actions. The program is automatically compiled and runs validations according to updated Brazilian standards.
+
+## Supported Documents
+
+### CPF (Individual Taxpayer Registry)
+- Validation with 11 digits
+- Calculation of two check digits
+- Rejects CPFs with all identical digits
+
+### CNPJ (National Corporate Taxpayer Registry)
+- Validation with 14 digits
+- Calculation of two check digits
+- Specific multipliers for SP, MG and other states
+
+## Project Structure
+
+```
+validador-documentos/
+├── src/
+│   ├── validador.cob              # Main program
+│   └── modulos/
+│       ├── validar-cpf.cob        # CPF validation module
+│       └── validar-cnpj.cob       # CNPJ validation module
+├── .github/
+│   └── workflows/
+│       └── validar-documento.yml  # CI/CD pipeline
+└── README.md
+```
+
+## How to Use via GitHub Actions
+
+1. Go to the **Actions** tab of the repository
+2. Select **Validador de Documentos**
+3. Click **Run workflow**
+4. Choose the document type (CPF or CNPJ)
+5. Enter the document number
+6. Click **Run**
+7. Follow the execution in the logs
+
+## CI/CD Pipeline
+
+The `.github/workflows/validar-documento.yml` file configures:
+
+1. Code checkout
+2. GnuCOBOL installation
+3. Program compilation
+4. Validation execution with user input
+5. Success or failure report
+
+## Requirements
+
+- GnuCOBOL 2.0 or higher
+- Ubuntu/Linux (for GitHub Actions)
+
+## Future Improvements
+
+- REST API integration via Python wrapper
+- Deploy on Google Cloud with Cloud Run
+- Frontend implementation with CSS/JavaScript/HTML
+
+---
+---
+
 # Validador de CPF/CNPJ
 
 Um validador de documentos brasileiros (CPF e CNPJ) desenvolvido em COBOL com CI/CD integrado ao GitHub Actions.
